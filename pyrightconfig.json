@@ -1,8 +1,7 @@
 {
-  "include": ["aurum", "nexscribe", "tests"],
+  "include": ["nexscribe"],
   "stubPath": "typings",
-  "typeCheckingMode": "basic",
-  "strict": ["aurum", "nexscribe", "tests"],
+  "typeCheckingMode": "strict",
   "venvPath": ".",
   "venv": ".venv",
   "reportMissingImports": "none",

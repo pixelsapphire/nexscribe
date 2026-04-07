@@ -1,6 +1,8 @@
 from os import PathLike
 from typing import Any, Callable, Final, Generator, Iterable, Mapping, ParamSpec, Protocol, SupportsBytes, SupportsFloat, SupportsInt, TypeVar
 
+from type_check import type_check  # type: ignore
+
 
 P = ParamSpec('P')
 R = TypeVar('R')
@@ -9,7 +11,6 @@ T = TypeVar('T')
 T_contra = TypeVar('T_contra', contravariant=True)
 U = TypeVar('U')
 U_contra = TypeVar('U_contra', contravariant=True)
-
 
 type JSONValue = None | bool | SupportsInt | SupportsFloat | str | SupportsBytes | PathLike[str] | Iterable['JSONValue'] | Mapping[str, 'JSONValue']
 
@@ -26,13 +27,18 @@ Undefined: Final[UndefinedType] = UndefinedType()
 
 
 class Future(Protocol[R_co]):
+
     def __await__(self) -> Generator[Any, Any, R_co]: ...
 
 
 class SupportsRichComparison[T_contra](Protocol):
+
     def __lt__(self, other: T_contra) -> bool: ...
+
     def __gt__(self, other: T_contra) -> bool: ...
+
     def __le__(self, other: T_contra) -> bool: ...
+
     def __ge__(self, other: T_contra) -> bool: ...
 
 
@@ -67,4 +73,9 @@ type AnyNFunction = Callable[..., Any]
 
 def discard_return(function: NFunction[P, R]) -> NConsumer[P]:
     def _ignore(*args: P.args, **kwargs: P.kwargs) -> None: function(*args, **kwargs)
+
     return _ignore
+
+
+def dynamic_cast[T](t: type[T], obj: Any) -> T | None:
+    return obj if type_check(obj, t) else None
