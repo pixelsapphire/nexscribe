@@ -1,7 +1,58 @@
+from importlib import import_module
 from os import PathLike
-from typing import Any, Callable, Final, Generator, Iterable, Mapping, ParamSpec, Protocol, SupportsBytes, SupportsFloat, SupportsInt, TypeVar
+from typing import Any, Callable, cast, Final, Generator, get_args, get_origin, Iterable, Literal, Mapping, ParamSpec, Protocol, SupportsBytes, \
+    SupportsFloat, SupportsInt, TypeVar, Union
 
-from type_check import type_check  # type: ignore
+from types import UnionType
+
+
+RuntimeTypeCheck = Callable[[Any, Any], bool]
+
+try:
+    from type_check.core import type_check as _third_party_type_check  # type: ignore[reportUnknownVariableType]
+    import_module('type_check.builtin_checks')
+    _runtime_type_check: RuntimeTypeCheck | None = cast(RuntimeTypeCheck, _third_party_type_check)
+except ImportError:
+    _runtime_type_check = None
+
+
+def _matches_exact_type(value: Any, expected_type: Any) -> bool:
+    origin = get_origin(expected_type)
+
+    if expected_type is Any: return True
+
+    if origin is None:
+        if expected_type is type(None): return value is None
+        if isinstance(expected_type, type): return type(value) is expected_type
+        return False
+
+    if origin in (UnionType, Union): return any(_matches_exact_type(value, option) for option in get_args(expected_type))
+    if origin is Literal: return value in get_args(expected_type)
+    if not isinstance(origin, type) or type(value) is not origin: return False
+
+    args = get_args(expected_type)
+    if not args: return True
+
+    if origin in (list, set, frozenset):
+        (item_type,) = args
+        return all(_matches_exact_type(item, item_type) for item in value)
+
+    if origin is tuple:
+        if len(args) == 2 and args[1] is Ellipsis: return all(_matches_exact_type(item, args[0]) for item in value)
+        if len(args) != len(value): return False
+        return all(_matches_exact_type(item, item_type) for item, item_type in zip(value, args, strict=True))
+
+    if origin is dict:
+        if len(args) != 2: return False
+        key_type, value_type = args
+        return all(_matches_exact_type(key, key_type) and _matches_exact_type(item, value_type) for key, item in value.items())
+
+    return True
+
+
+def _runtime_type_matches(value: Any, expected_type: Any) -> bool:
+    if _runtime_type_check is None: return _matches_exact_type(value, expected_type)
+    return bool(_runtime_type_check(value, expected_type)) and _matches_exact_type(value, expected_type)
 
 
 P = ParamSpec('P')
@@ -73,9 +124,15 @@ type AnyNFunction = Callable[..., Any]
 
 def discard_return(function: NFunction[P, R]) -> NConsumer[P]:
     def _ignore(*args: P.args, **kwargs: P.kwargs) -> None: function(*args, **kwargs)
-
     return _ignore
 
 
-def dynamic_cast[T](t: type[T], obj: Any) -> T | None:
-    return obj if type_check(obj, t) else None
+# @overload
+def dynamic_cast[T](t: type[T], obj: Any) -> T | None: return obj if _runtime_type_matches(obj, t) else None
+
+# @overload
+# def dynamic_cast(t: Any, obj: Any) -> Any: ...
+#
+#
+# def dynamic_cast(t: Any, obj: Any) -> Any:
+#     return obj if _runtime_type_matches(obj, t) else None
