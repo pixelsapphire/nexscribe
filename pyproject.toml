@@ -8,13 +8,14 @@ include = ["aurum*", "nexscribe*"]
 
 [project]
 name = "nexscribe"
-version = "0.1.0"
+version = "0.2.0"
 description = "NeXScribe"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "rich>=14.3.4",
     "rttc>=1.0.6",
+    "type-check>=0.1.8",
 ]
 
 [dependency-groups]

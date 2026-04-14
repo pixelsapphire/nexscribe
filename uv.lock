@@ -84,6 +84,7 @@ source = { editable = "." }
 dependencies = [
     { name = "rich" },
     { name = "rttc" },
+    { name = "type-check" },
 ]
 
 [package.dev-dependencies]
@@ -99,6 +100,7 @@ dev = [
 requires-dist = [
     { name = "rich", specifier = ">=14.3.4" },
     { name = "rttc", specifier = ">=1.0.6" },
+    { name = "type-check", specifier = ">=0.1.8" },
 ]
 
 [package.metadata.requires-dev]
@@ -256,6 +258,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c3/af/14b24e41977adb296d6bd1fb59402cf7d60ce364f90c890bd2ec65c43b5a/tomlkit-0.14.0.tar.gz", hash = "sha256:cf00efca415dbd57575befb1f6634c4f42d2d87dbba376128adb42c121b87064", size = 187167, upload-time = "2026-01-13T01:14:53.304Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b5/11/87d6d29fb5d237229d67973a6c9e06e048f01cf4994dee194ab0ea841814/tomlkit-0.14.0-py3-none-any.whl", hash = "sha256:592064ed85b40fa213469f81ac584f67a4f2992509a7c3ea2d632208623a3680", size = 39310, upload-time = "2026-01-13T01:14:51.965Z" },
+]
+
+[[package]]
+name = "type-check"
+version = "0.1.8"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/f7/c7c0211f2f13b6decd23eab5dc91d06c5376d37d178b390c1141fdfa9141/type-check-0.1.8.tar.gz", hash = "sha256:4ce3752330e22717e1f8f020a5a21492b7c886b173542d238e6957b421888b04", size = 1829, upload-time = "2018-04-11T08:15:33.162Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f3/78/7ed922edae8e22c72e1a3ab9068f5d6911a990f784c913b70cbac1f93f46/type_check-0.1.8-py3-none-any.whl", hash = "sha256:f3200dee660f6a08148d047f6ed3080060613da91bdce6206de72a1b9c8daf81", size = 3272, upload-time = "2018-04-11T08:15:54.774Z" },
 ]
 
 [[package]]

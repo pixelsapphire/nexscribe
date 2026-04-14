@@ -1,9 +1,10 @@
 from importlib import import_module
 from os import PathLike
-from typing import Any, Callable, cast, Final, Generator, get_args, get_origin, Iterable, Literal, Mapping, ParamSpec, Protocol, SupportsBytes, \
-    SupportsFloat, SupportsInt, TypeVar, Union
+from typing import Any, Callable, cast, Final, Generator, get_args, get_origin, Iterable, Literal, Mapping, overload, ParamSpec, Protocol, \
+    SupportsBytes, \
+    SupportsFloat, SupportsInt, TypeAliasType, TypeVar, Union
 
-from types import UnionType
+from nexscribe.core._aliases import pytypes
 
 
 RuntimeTypeCheck = Callable[[Any, Any], bool]
@@ -17,16 +18,16 @@ except ImportError:
 
 
 def _matches_exact_type(value: Any, expected_type: Any) -> bool:
-    origin = get_origin(expected_type)
+    origin: Any = get_origin(expected_type)
 
     if expected_type is Any: return True
 
     if origin is None:
         if expected_type is type(None): return value is None
-        if isinstance(expected_type, type): return type(value) is expected_type
+        if isinstance(expected_type, type): return isinstance(value, expected_type)
         return False
 
-    if origin in (UnionType, Union): return any(_matches_exact_type(value, option) for option in get_args(expected_type))
+    if origin in (pytypes.UnionType, Union): return any(_matches_exact_type(value, option) for option in get_args(expected_type))
     if origin is Literal: return value in get_args(expected_type)
     if not isinstance(origin, type) or type(value) is not origin: return False
 
@@ -124,15 +125,29 @@ type AnyNFunction = Callable[..., Any]
 
 def discard_return(function: NFunction[P, R]) -> NConsumer[P]:
     def _ignore(*args: P.args, **kwargs: P.kwargs) -> None: function(*args, **kwargs)
+
     return _ignore
 
 
-# @overload
-def dynamic_cast[T](t: type[T], obj: Any) -> T | None: return obj if _runtime_type_matches(obj, t) else None
+@overload
+def dynamic_cast(t: type[Literal['']], obj: Any) -> Any: ...
 
-# @overload
-# def dynamic_cast(t: Any, obj: Any) -> Any: ...
-#
-#
-# def dynamic_cast(t: Any, obj: Any) -> Any:
-#     return obj if _runtime_type_matches(obj, t) else None
+
+@overload
+def dynamic_cast[T](t: type[T], obj: Any) -> T | None: ...
+
+
+@overload
+def dynamic_cast(t: pytypes.UnionType, obj: Any) -> Any: ...
+
+
+@overload
+def dynamic_cast(t: TypeAliasType, obj: Any) -> Any: ...
+
+
+@overload
+def dynamic_cast[T](t: T, obj: Any) -> T | None: ...
+
+
+def dynamic_cast(t: Any, obj: Any) -> Any:
+    return obj if _runtime_type_matches(obj, t) else None

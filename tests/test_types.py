@@ -7,7 +7,7 @@ class TestDynamicCast(TestCase):
 
     def test_exact_primitive_type(self):
         self.assertEqual(dynamic_cast(int, 5), 5)
-        self.assertIsNone(dynamic_cast(int, True))
+        self.assertIsNone(dynamic_cast(float, 5))
 
     def test_exact_parameterized_list(self):
         self.assertEqual(dynamic_cast(list[int], [1, 2]), [1, 2])
@@ -23,3 +23,6 @@ class TestDynamicCast(TestCase):
         self.assertIsNone(dynamic_cast(int | None, '1'))
         self.assertIsNone(dynamic_cast(int, None))
 
+    def test_inheritance(self) -> None:
+        self.assertEqual(dynamic_cast(object, 'value'), 'value')
+        self.assertIsNone(dynamic_cast(TestDynamicCast,  TestCase()))
