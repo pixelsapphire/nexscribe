@@ -1,8 +1,7 @@
 from importlib import import_module
 from os import PathLike
 from typing import Any, Callable, cast, Final, Generator, get_args, get_origin, Iterable, Literal, Mapping, overload, ParamSpec, Protocol, \
-    SupportsBytes, \
-    SupportsFloat, SupportsInt, TypeAliasType, TypeVar, Union
+    SupportsBytes, SupportsFloat, SupportsInt, TypeAliasType, TypeVar, Union
 
 from nexscribe.core._aliases import pytypes
 
@@ -130,10 +129,6 @@ def discard_return(function: NFunction[P, R]) -> NConsumer[P]:
 
 
 @overload
-def dynamic_cast(t: type[Literal['']], obj: Any) -> Any: ...
-
-
-@overload
 def dynamic_cast[T](t: type[T], obj: Any) -> T | None: ...
 
 
@@ -151,3 +146,7 @@ def dynamic_cast[T](t: T, obj: Any) -> T | None: ...
 
 def dynamic_cast(t: Any, obj: Any) -> Any:
     return obj if _runtime_type_matches(obj, t) else None
+
+
+def literal_cast(l: Any, obj: Any) -> Any:
+    return obj if obj in get_args(l) else None
