@@ -93,6 +93,9 @@ class SupportsRichComparison[T_contra](Protocol):
     def __ge__(self, other: T_contra) -> bool: ...
 
 
+def discard(_: Any) -> None: pass
+
+
 type Callback = Callable[[], None]
 type Consumer[T_contra] = Callable[[T_contra], None]
 type BiConsumer[T_contra, U_contra] = Callable[[T_contra, U_contra], None]
