@@ -91,8 +91,6 @@ class Task[T, R]:
 
     def as_pipeline(self) -> 'Pipeline[T, R]': return Pipeline((self,))
 
-    # def __or__[NR](self: Task[T, R], other: TaskRunnable[R, NR]) -> Pipeline[T, NR]: return self.as_pipeline() | other
-
 
 @dataclass(frozen=True)
 class Pipeline[T, R]:
@@ -151,9 +149,6 @@ class StatefulTask[T, R, S = Any]:
         return result
 
     def as_pipeline(self, initializer: Supplier[S]) -> StatefulPipeline[T, R, S]: return StatefulPipeline((self,), initializer)
-
-    # def __or__[NR](self, other: StatefulPipeline[R, NR, S]) -> StatefulPipeline[T, NR, S]:
-    #     return StatefulPipeline((self, *other.steps), other.state_supplier)
 
 
 @dataclass(frozen=True)
