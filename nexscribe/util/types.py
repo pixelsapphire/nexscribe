@@ -2,9 +2,7 @@ from importlib import import_module
 from os import PathLike
 from typing import Any, Callable, cast, Final, Generator, get_args, get_origin, Iterable, Literal, Mapping, overload, ParamSpec, Protocol, \
     SupportsBytes, SupportsFloat, SupportsInt, TypeAliasType, TypeVar, Union
-
 from nexscribe.core._aliases import pytypes
-
 
 RuntimeTypeCheck = Callable[[Any, Any], bool]
 
@@ -78,12 +76,10 @@ Undefined: Final[UndefinedType] = UndefinedType()
 
 
 class Future(Protocol[R_co]):
-
     def __await__(self) -> Generator[Any, Any, R_co]: ...
 
 
 class SupportsRichComparison[T_contra](Protocol):
-
     def __lt__(self, other: T_contra) -> bool: ...
 
     def __gt__(self, other: T_contra) -> bool: ...
@@ -93,7 +89,8 @@ class SupportsRichComparison[T_contra](Protocol):
     def __ge__(self, other: T_contra) -> bool: ...
 
 
-def discard(_: Any) -> None: pass
+def discard(_: Any) -> None:
+    pass
 
 
 type Callback = Callable[[], None]
@@ -105,7 +102,7 @@ type Function[T_contra, R_co] = Callable[[T_contra], R_co]
 type BiFunction[T_contra, U_contra, R_co] = Callable[[T_contra, U_contra], R_co]
 type NFunction[**P, R_co] = Callable[P, R_co]
 
-type Predicate = Callable[..., bool]
+type Predicate[R] = Function[R, bool]
 
 type AsyncCallback = Supplier[Future[None]]
 type AsyncConsumer[T_contra] = Function[T_contra, Future[None]]
@@ -126,7 +123,8 @@ type AnyNFunction = Callable[..., Any]
 
 
 def discard_return(function: NFunction[P, R]) -> NConsumer[P]:
-    def _ignore(*args: P.args, **kwargs: P.kwargs) -> None: function(*args, **kwargs)
+    def _ignore(*args: P.args, **kwargs: P.kwargs) -> None:
+        function(*args, **kwargs)
 
     return _ignore
 
@@ -151,5 +149,5 @@ def dynamic_cast(t: Any, obj: Any) -> Any:
     return obj if _runtime_type_matches(obj, t) else None
 
 
-def literal_cast(l: Any, obj: Any) -> Any:
-    return obj if obj in get_args(l) else None
+def literal_cast(literal_t: Any, obj: Any) -> Any:
+    return obj if obj in get_args(literal_t) else None
