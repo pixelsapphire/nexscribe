@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["aurum*", "nexscribe*"]
+include = ["nexscribe*"]
 
 [project]
 name = "nexscribe"
-version = "0.3.0"
+version = "0.3.1"
 description = "NeXScribe"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -21,10 +21,11 @@ dependencies = [
 [dependency-groups]
 dev = [
     "nexscribe",
-    "pylint>=4.0.5",
-    "pyright>=1.1.409",
-    "pytest>=9.0.3",
-    "ruff>=0.15.13"
+    "mypy>=2.1.0",
+    "pylint>=4.0.6",
+    "pyright>=1.1.410",
+    "pytest>=9.1.0",
+    "ruff>=0.15.19",
 ]
 
 [tool.uv.workspace]
