@@ -141,12 +141,25 @@ def dynamic_cast(t: pytypes.UnionType, obj: Any) -> Any: ...
 def dynamic_cast(t: TypeAliasType, obj: Any) -> Any: ...
 
 
-@overload
-def dynamic_cast[T](t: T, obj: Any) -> T | None: ...
-
-
 def dynamic_cast(t: Any, obj: Any) -> Any:
     return obj if _runtime_type_matches(obj, t) else None
+
+
+@overload
+def checked_cast[T](t: type[T], obj: Any) -> T: ...
+
+
+@overload
+def checked_cast(t: pytypes.UnionType, obj: Any) -> Any: ...
+
+
+@overload
+def checked_cast(t: TypeAliasType, obj: Any) -> Any: ...
+
+
+def checked_cast(t: Any, obj: Any) -> Any:
+    if _runtime_type_matches(obj, t): return obj
+    else: raise ValueError(f"Cannot cast {t} to {obj}")
 
 
 def literal_cast(literal_t: Any, obj: Any) -> Any:
